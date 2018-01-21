@@ -42,16 +42,19 @@ void Logger::log(Gps gps) {
 
   // an open file, both NMEAs and therefore all required data, lets log
   if(trip.gpsLog && gps.RMC && gps.GGA) {
-      gpsLogged = true;
-      // dateTime,speed,altitude,latitudeDegrees,longitudeDegrees,fix,satellites
-      trip.gpsLog.print(_dateTime());trip.gpsLog.write(',');
-      trip.gpsLog.print(gps.speed);trip.gpsLog.write(',');
-      trip.gpsLog.print(gps.altitude);trip.gpsLog.write(',');
-      trip.gpsLog.print(gps.latitudeDegrees, 6);trip.gpsLog.write(',');
-      trip.gpsLog.print(gps.longitudeDegrees, 6);trip.gpsLog.write(',');
-      trip.gpsLog.print(gps.fix);trip.gpsLog.write(',');
-      trip.gpsLog.println(gps.satellites);
-      trip.gpsLog.flush();
+    if(!gpsLogged) {
+      Serial.println("Gps logging");
+    }
+    gpsLogged = true;
+    // dateTime,speed,altitude,latitudeDegrees,longitudeDegrees,fix,satellites
+    trip.gpsLog.print(_dateTime());trip.gpsLog.write(',');
+    trip.gpsLog.print(gps.speed);trip.gpsLog.write(',');
+    trip.gpsLog.print(gps.altitude);trip.gpsLog.write(',');
+    trip.gpsLog.print(gps.latitudeDegrees, 6);trip.gpsLog.write(',');
+    trip.gpsLog.print(gps.longitudeDegrees, 6);trip.gpsLog.write(',');
+    trip.gpsLog.print(gps.fix);trip.gpsLog.write(',');
+    trip.gpsLog.println(gps.satellites);
+    trip.gpsLog.flush();
   }
 }
 
@@ -64,7 +67,13 @@ void Logger::log(System sys) {
   }  
   _log_sys_timer = millis();
 
+  // trip has a log to write to
   if(trip.sysLog) {
+    if(!sysLogged) {
+      Serial.println("Sys logging");
+    }
+    sysLogged = true;
+   
     trip.sysLog.print(_dateTime());trip.sysLog.write(',');
     trip.sysLog.print(sys.vbat);trip.sysLog.write(',');
     trip.sysLog.println(sys.vusb);
@@ -73,13 +82,21 @@ void Logger::log(System sys) {
 }
 
 void Logger:: end() {
-  recording = false;
   Serial.println("Logging ended. Closing log files.");
   trip.gpsLog.close();
   trip.sysLog.close();
   SDHelper.dumpFile(trip.gpsLogPath);
-  SDHelper.dumpFile(trip.sysLogPath);
+  //SDHelper.dumpFile(trip.sysLogPath);
+  if (!gpsLogged) {
+    Serial.println("Delete gps");
+    SDHelper.deleteFile(trip.gpsLogPath);
+  }
   Serial.println("Enter beacon mode and sleep...");
+
+  // reset
+  recording = false;
+  gpsLogged = false;
+  sysLogged = false;
 }
 
 char* Logger::_dateTime() {

@@ -1,11 +1,12 @@
 #include "System.h"
 
-System::System(uint8_t vbat_pin, uint8_t vusb_pin, uint8_t usb_connected_pin) {
+System::System(uint8_t vbat_pin, uint8_t vusb_pin, uint8_t usb_connected_pin, uint8_t gps_power_pin) {
   booted = false;
   
   _vbat_pin = vbat_pin;
   _vusb_pin = vusb_pin;
   _usb_connected_pin = usb_connected_pin;
+  _gps_power_pin = gps_power_pin;
   
   for (int thisReading = 0; thisReading < VUSB_AVG_READINGS; thisReading++) {
     _readings[thisReading] = 0;
@@ -18,6 +19,9 @@ System::System(uint8_t vbat_pin, uint8_t vusb_pin, uint8_t usb_connected_pin) {
   pinMode(_vbat_pin, INPUT);
   pinMode(_vusb_pin, INPUT);
   pinMode(_usb_connected_pin, INPUT);
+  pinMode(_gps_power_pin, OUTPUT);
+
+
 
   //attachInterrupt(digitalPinToInterrupt(_usb_connected_pin), _setUsbPower, CHANGE);
 }
@@ -44,6 +48,10 @@ void System::update()
   int analog_vusb = _read_vusb(_vusb_pin);
   vusb = _to_voltage(analog_vusb);
   usb_power = digitalRead(_usb_connected_pin);
+}
+
+void System::gpsPower(bool on) {
+  digitalWrite(_gps_power_pin, on);
 }
 
 float System::_read_vusb(int pin) {
@@ -81,3 +89,4 @@ float System::_to_voltage(int analog_reading) {
 void System::_setUsbPower () {
   Serial.println("set usbpower");
 }
+

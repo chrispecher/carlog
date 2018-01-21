@@ -10,9 +10,9 @@
 class System
 {
   public:
-    System(uint8_t vbat_pin, uint8_t vusb_pin, uint8_t usb_connected_pin);
+    System(uint8_t vbat_pin, uint8_t vusb_pin, uint8_t usb_connected_pin, uint8_t gps_power_pin);
     void update();
-        
+    void gpsPower(bool on);
     float vbat;
     float vusb;
     float vusb_init;
@@ -32,6 +32,7 @@ class System
     int _vbat_pin;
     int _vusb_pin;
     int _usb_connected_pin;
+    int _gps_power_pin;
 };
 
 #endif

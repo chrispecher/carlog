@@ -17,6 +17,7 @@ class Logger {
     void end();
     bool recording = false;
     bool gpsLogged = false;
+    bool sysLogged = false;
     uint8_t hour, minute, seconds, year, month, day;
   private:
     uint32_t _log_sys_timer;

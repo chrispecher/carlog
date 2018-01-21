@@ -33,7 +33,7 @@ void Trip::_createGpsLogFile() {
   }
   Serial.println("folder created!");
   
-  char* gpsLogFilename = "gps.log";
+  char* gpsLogFilename = "gps.csv";
   strncpy(gpsLogPath, foldername, sizeof(gpsLogPath));
   strncat(gpsLogPath, gpsLogFilename, (sizeof(gpsLogFilename) - strlen(gpsLogFilename)) );
   Serial.print("gpsLogPath: "); Serial.println(gpsLogPath);
@@ -51,7 +51,7 @@ void Trip::_createGpsLogFile() {
 
 void Trip::_createSysLogFile() {
    
-  char* sysLogFilename = "sys.log";
+  char* sysLogFilename = "sys.csv";
   strncpy(sysLogPath, foldername, sizeof(sysLogPath));
   strncat(sysLogPath, sysLogFilename, (sizeof(sysLogFilename) - strlen(sysLogFilename)) );
   Serial.print("sysLogPath: "); Serial.println(sysLogPath);
