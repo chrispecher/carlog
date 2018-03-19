@@ -20,8 +20,8 @@ class Gps
     void serialize();
     void print_debug(); 
     
-    char* RMC;
-    char* GGA;
+    char RMC[120];
+    char GGA[120];
 
     // Adafruit GPS
     uint8_t hour, minute, seconds, year, month, day;

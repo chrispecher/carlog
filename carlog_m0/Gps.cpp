@@ -53,10 +53,10 @@ void Gps::update() {
       return;
     
     // map data
-    if (strstr(stringptr, "RMC")) 
-      this->RMC =  stringptr;
-    if (strstr(stringptr, "GGA")) 
-      this->GGA =  stringptr;
+    if (strstr(stringptr, "$GPRMC")) 
+      strcpy(this->RMC, stringptr);
+    if (strstr(stringptr, "$GPGGA")) 
+      strcpy(this->GGA, stringptr);
     this->hour = _gps->hour;
     this->minute = _gps->minute;
     this->seconds = _gps->seconds;

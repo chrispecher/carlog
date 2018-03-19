@@ -18,7 +18,7 @@ void Logger::begin() {
 
   // write header gps
   if(trip.gpsLog) {
-    trip.gpsLog.println("dateTime,speed,altitude,latitudeDegrees,longitudeDegrees,fix,satellites");
+    trip.gpsLog.println("dateTime,speed,altitude,latitudeDegrees,longitudeDegrees,fix,satellites,rmc,gga");
   }
   
   // write header sys
@@ -40,8 +40,8 @@ void Logger::log(Gps gps) {
   }
   _log_gps_timer = millis();
 
-  // an open file, both NMEAs and therefore all required data, lets log
-  if(trip.gpsLog && gps.RMC && gps.GGA) {
+  // an open file, both NMEAs received and therefore all required data, lets log
+  if(trip.gpsLog && strstr(gps.RMC, "$GPRMC") && strstr(gps.GGA, "$GPGGA")) {
     if(!gpsLogged) {
       Serial.println("Gps logging");
     }
@@ -53,7 +53,9 @@ void Logger::log(Gps gps) {
     trip.gpsLog.print(gps.latitudeDegrees, 6);trip.gpsLog.write(',');
     trip.gpsLog.print(gps.longitudeDegrees, 6);trip.gpsLog.write(',');
     trip.gpsLog.print(gps.fix);trip.gpsLog.write(',');
-    trip.gpsLog.println(gps.satellites);
+    trip.gpsLog.print(gps.satellites);
+    trip.gpsLog.print(gps.RMC);trip.gpsLog.write(',');
+    trip.gpsLog.println(gps.GGA);
     trip.gpsLog.flush();
   }
 }

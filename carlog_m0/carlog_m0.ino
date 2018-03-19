@@ -23,6 +23,7 @@ uint8_t vbatPin = A7;
 uint8_t vusbPin = A0;
 uint8_t usbConnectedPin = A1;
 uint8_t gpsPowerPin = A2;
+uint8_t sysPowerPin = A3;
 System sys(vbatPin, vusbPin, usbConnectedPin, gpsPowerPin);
 
 Logger logger(&gps);
@@ -40,6 +41,11 @@ void setup()
     Serial.print("setDebugInterval: " + setDebugInterval);
   #endif
 
+  // set sys power
+  pinMode(sysPowerPin, OUTPUT);
+  digitalWrite(sysPowerPin, 1);
+  Serial.println("Sys high");
+
   // start up gps
   sys.gpsPower(1);
   gps.begin();
@@ -47,7 +53,7 @@ void setup()
   // init card on ss pin 4
   SDHelper.begin(4);
   // option to wipe the card by sending 'Y' on serial
-  SDHelper.wipeCard();
+  //SDHelper.wipeCard();
     
   // start the logger to create the trip
   logger.begin();
@@ -88,12 +94,17 @@ void loop()
     loggerToggleTimeout = timer.setTimeout(3000, [] {
       Serial.println("loggerToggleTimeout");
       if (stoppedButPower) {
+        digitalWrite(sysPowerPin, 1);
+        Serial.println("Sys high callback");
         sys.gpsPower(1);
         logger.begin();
       }
       else if (recordingNoPower) {
          sys.gpsPower(0);
          logger.end();
+         delay(1000);
+         digitalWrite(sysPowerPin, 0);
+         Serial.println("Sys low");
       }
       loggerToggleTimeout = 0;
     });
@@ -110,8 +121,8 @@ void debug() {
   
   }
   //gps.print_debug();
-    //Serial.print("VBat: ");Serial.println(sys.vbat);
-//    Serial.print("VUsb: ");Serial.println(sys.vusb);
+    Serial.print("VBat: ");Serial.println(sys.vbat);
+    Serial.print("VUsb: ");Serial.println(sys.vusb);
 
   digitalWrite(LED_BUILTIN, sys.usb_power);
 
